@@ -15,6 +15,7 @@ const AuthCard: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState<{ type: 'success' | 'error' | '', text: string }>({ type: '', text: '' });
   
   const [formData, setFormData] = useState({
     username: '',
@@ -123,17 +124,99 @@ const AuthCard: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    setApiMessage({ type: '', text: '' }); // Clear previous API messages
+
+    // Simulate API call - This line will be replaced for 'register' and 'verify' modes
+    // await new Promise(resolve => setTimeout(resolve, 2000));
+
     if (mode === 'register') {
+      // Frontend validation (ensure all fields required by the component are valid)
+      // Note: backend only uses email and password for now.
+      if (!validations.email.isValid || !validations.password.isValid || !validations.confirmPassword.isValid) {
+          setApiMessage({ type: 'error', text: 'Por favor, preencha todos os campos corretamente.' });
+          setIsLoading(false);
+          return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+          setApiMessage({ type: 'error', text: 'As senhas não coincidem.' });
+          setIsLoading(false);
+          return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:3000/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: formData.email, password: formData.password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setApiMessage({ type: 'success', text: data.message || 'Código de verificação enviado para seu e-mail!' });
+          setMode('verify'); // Transition to verification mode
+        } else {
+          setApiMessage({ type: 'error', text: data.message || 'Falha no registro. Tente novamente.' });
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        setApiMessage({ type: 'error', text: 'Erro ao conectar com o servidor. Tente novamente mais tarde.' });
+      } finally {
+        setIsLoading(false);
+      }
+
+    } else if (mode === 'reset') { // Keep existing reset logic (simulated for now)
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API
+      setApiMessage({ type: 'success', text: 'Se seu e-mail estiver cadastrado, você receberá um código.' });
       setMode('verify');
-    } else if (mode === 'reset') {
-      setMode('verify');
+      setIsLoading(false);
+    } else if (mode === 'login') { // Keep existing login logic (simulated for now)
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API
+      // Fake login success for now
+      setApiMessage({ type: 'success', text: 'Login bem-sucedido!' });
+      setIsLoading(false);
+      // console.log('Simulating login...');
+    } else if (mode === 'verify') {
+      if (!formData.email || !formData.verificationCode || formData.verificationCode.length !== 6) {
+        setApiMessage({ type: 'error', text: 'Por favor, insira um código de verificação válido (6 caracteres).' });
+        setIsLoading(false);
+        return;
+      }
+      try {
+        const response = await fetch('http://localhost:3000/api/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: formData.email, code: formData.verificationCode }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setApiMessage({ type: 'success', text: data.message || 'E-mail verificado com sucesso! Você já pode fazer login.' });
+          // Optionally, reset parts of the form or change mode
+          setFormData(prev => ({
+              ...prev,
+              verificationCode: '',
+              // Potentially clear password fields too, or reset to initial state for login
+              // username: '', // if you want to clear username
+              // password: '',
+              // confirmPassword: '',
+          }));
+          setMode('login'); // Redirect to login mode after successful verification
+        } else {
+          setApiMessage({ type: 'error', text: data.message || 'Falha na verificação. Código inválido ou expirado.' });
+        }
+      } catch (error) {
+        console.error('Verification error:', error);
+        setApiMessage({ type: 'error', text: 'Erro ao conectar com o servidor. Tente novamente mais tarde.' });
+      } finally {
+        setIsLoading(false);
+      }
     }
-    
-    setIsLoading(false);
   };
 
   const renderModeContent = () => {
@@ -141,6 +224,14 @@ const AuthCard: React.FC = () => {
       case 'login':
         return (
           <>
+            {apiMessage.text && (
+              <div className={`p-3 mb-4 rounded-md text-sm ${
+                apiMessage.type === 'success' ? 'bg-green-100 text-green-700' :
+                apiMessage.type === 'error' ? 'bg-red-100 text-red-700' : ''
+              }`}>
+                {apiMessage.text}
+              </div>
+            )}
             <div className="text-center mb-8">
               <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-osint-accent/10 rounded-full">
                 <Shield className="w-8 h-8 text-osint-accent" />
@@ -224,6 +315,14 @@ const AuthCard: React.FC = () => {
       case 'register':
         return (
           <>
+            {apiMessage.text && (
+              <div className={`p-3 mb-4 rounded-md text-sm ${
+                apiMessage.type === 'success' ? 'bg-green-100 text-green-700' :
+                apiMessage.type === 'error' ? 'bg-red-100 text-red-700' : ''
+              }`}>
+                {apiMessage.text}
+              </div>
+            )}
             <div className="text-center mb-8">
               <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-osint-accent/10 rounded-full">
                 <User className="w-8 h-8 text-osint-accent" />
@@ -398,6 +497,14 @@ const AuthCard: React.FC = () => {
       case 'reset':
         return (
           <>
+            {apiMessage.text && (
+              <div className={`p-3 mb-4 rounded-md text-sm ${
+                apiMessage.type === 'success' ? 'bg-green-100 text-green-700' :
+                apiMessage.type === 'error' ? 'bg-red-100 text-red-700' : ''
+              }`}>
+                {apiMessage.text}
+              </div>
+            )}
             <div className="text-center mb-8">
               <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-osint-orange/10 rounded-full">
                 <Mail className="w-8 h-8 text-osint-orange" />
@@ -458,6 +565,14 @@ const AuthCard: React.FC = () => {
       case 'verify':
         return (
           <>
+            {apiMessage.text && (
+              <div className={`p-3 mb-4 rounded-md text-sm ${
+                apiMessage.type === 'success' ? 'bg-green-100 text-green-700' :
+                apiMessage.type === 'error' ? 'bg-red-100 text-red-700' : ''
+              }`}>
+                {apiMessage.text}
+              </div>
+            )}
             <div className="text-center mb-8">
               <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-osint-blue/10 rounded-full">
                 <CheckCircle className="w-8 h-8 text-osint-blue" />
