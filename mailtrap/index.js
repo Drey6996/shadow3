@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 const transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
-  port: 587,
+  port: 2525, // Changed to 2525
   auth: {
     user: "97dab3789e5a35",
     pass: "a30771425ce6d8"
