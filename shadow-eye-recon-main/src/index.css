@@ -1,0 +1,161 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* OSINT Dark Theme Design System */
+
+@layer base {
+  :root {
+    --background: 218 23% 6%;
+    --foreground: 210 20% 95%;
+
+    --card: 218 23% 8%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 218 23% 8%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 174 100% 42%;
+    --primary-foreground: 218 23% 6%;
+
+    --secondary: 218 23% 15%;
+    --secondary-foreground: 210 20% 95%;
+
+    --muted: 218 23% 12%;
+    --muted-foreground: 210 10% 60%;
+
+    --accent: 174 100% 42%;
+    --accent-foreground: 218 23% 6%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 20% 95%;
+
+    --border: 218 23% 15%;
+    --input: 218 23% 12%;
+    --ring: 174 100% 42%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 218 23% 6%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 174 100% 42%;
+    --sidebar-primary-foreground: 218 23% 6%;
+    --sidebar-accent: 218 23% 15%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 218 23% 15%;
+    --sidebar-ring: 174 100% 42%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-osint-dark-900 text-foreground font-osint;
+    background: linear-gradient(135deg, #0a0a0b 0%, #1a1a1d 50%, #2d2d32 100%);
+    min-height: 100vh;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .osint-input {
+    @apply bg-osint-dark-700/50 border-osint-dark-600 text-foreground placeholder:text-osint-dark-300 
+           rounded-lg px-4 py-3 transition-all duration-300 
+           focus:border-osint-accent focus:ring-2 focus:ring-osint-accent/20 focus:bg-osint-dark-700/80
+           hover:border-osint-dark-500;
+  }
+
+  .osint-button {
+    @apply bg-osint-accent hover:bg-osint-accent-dark text-osint-dark-900 
+           font-semibold px-6 py-3 rounded-lg transition-all duration-300 
+           transform hover:scale-105 hover:shadow-lg active:scale-95
+           focus:ring-2 focus:ring-osint-accent/50;
+  }
+
+  .osint-card {
+    @apply bg-osint-dark-800/80 backdrop-blur-sm border border-osint-dark-600/50 
+           rounded-xl shadow-2xl transition-all duration-300
+           hover:border-osint-dark-500/70 hover:shadow-osint-accent/10;
+  }
+
+  .osint-glow {
+    @apply shadow-[0_0_20px_rgba(0,212,170,0.3)];
+  }
+
+  .osint-text-gradient {
+    @apply bg-gradient-to-r from-osint-accent to-osint-blue bg-clip-text text-transparent;
+  }
+}
+
+/* Animated background particles */
+.particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(0, 212, 170, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: particle-float 6s ease-in-out infinite;
+}
+
+.particle:nth-child(odd) {
+  animation-delay: -2s;
+  background: rgba(9, 132, 227, 0.1);
+}
+
+.particle:nth-child(3n) {
+  animation-delay: -4s;
+  background: rgba(253, 127, 40, 0.1);
+}
+
+/* Loading animations */
+.loading-spinner {
+  @apply inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-osint-dark-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-osint-dark-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-osint-accent/50;
+}
+
+/* Form validation states */
+.input-success {
+  @apply border-green-500 focus:border-green-500 focus:ring-green-500/20;
+}
+
+.input-error {
+  @apply border-red-500 focus:border-red-500 focus:ring-red-500/20;
+}
+
+.input-warning {
+  @apply border-yellow-500 focus:border-yellow-500 focus:ring-yellow-500/20;
+}
